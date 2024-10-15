@@ -126,7 +126,10 @@ function! blamer#GetMessages(file, line_number, line_count) abort
   let l:dir_path = shellescape(s:substitute_path_separator(expand('%:h')))
   let l:end_line = a:line_number + a:line_count - 1
   let l:file_path_escaped = shellescape(a:file)
-  let l:command = 'LC_ALL=C git -C ' . l:dir_path . ' --no-pager blame --line-porcelain -L ' . a:line_number . ',' . l:end_line . ' -- ' . l:file_path_escaped
+  let l:command = 'git -C ' . l:dir_path . ' --no-pager blame --line-porcelain -L ' . a:line_number . ',' . l:end_line . ' -- ' . l:file_path_escaped
+  if shell == 'sh' " Ensure Windows cmd.exe and Powershell compatibility
+    let l:command = 'LC_ALL=C ' . l:command
+  endif
   let l:result = system(l:command)
   let l:lines = split(l:result, '\n')
 
